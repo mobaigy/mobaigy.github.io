@@ -22,25 +22,34 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"mobaigy.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":true,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark","enable":false},"copy_button":{"enable":true,"show_result":true,"style":"flat"},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="奔赴山海，保持热爱">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Mobai&#39;s blog">
-<meta property="og:url" content="https://mobaigy.github.io/index.html">
+    <meta name="description" content="前言最近 Gemini 3 Pro 发布，听说在多模态理解和代码生成上有了质的飞跃。作为一个热衷于 AI Coding 的开发者，我一直想做一个基于手势控制的 3D 粒子系统，但以往光是配置环境、调试 MediaPipe 和 Three.js 的坐标对齐就要花上半天。 今天使用Gemini 3做一个测试：不写一行代码，只给 Prompt，看 Gemini 3 Pro 能否生成一个单文件、无依赖（C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实测 Gemini 3 Pro：一行 Prompt 生成 WebGL + MediaPipe 手势交互粒子系统">
+<meta property="og:url" content="https://mobaigy.github.io/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/index.html">
 <meta property="og:site_name" content="Mobai&#39;s blog">
-<meta property="og:description" content="奔赴山海，保持热爱">
+<meta property="og:description" content="前言最近 Gemini 3 Pro 发布，听说在多模态理解和代码生成上有了质的飞跃。作为一个热衷于 AI Coding 的开发者，我一直想做一个基于手势控制的 3D 粒子系统，但以往光是配置环境、调试 MediaPipe 和 Three.js 的坐标对齐就要花上半天。 今天使用Gemini 3做一个测试：不写一行代码，只给 Prompt，看 Gemini 3 Pro 能否生成一个单文件、无依赖（C">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mobaigy.github.io/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/WebGestic-1.png">
+<meta property="og:image" content="https://mobaigy.github.io/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/WebGestic-2.png">
+<meta property="article:published_time" content="2025-11-30T11:36:33.000Z">
+<meta property="article:modified_time" content="2025-11-30T13:19:14.610Z">
 <meta property="article:author" content="mobai">
-<meta property="article:tag" content="Golang, Cpp, Python, Linux, AI">
+<meta property="article:tag" content="AIGC">
+<meta property="article:tag" content="Gemini">
+<meta property="article:tag" content="MediaPipe">
+<meta property="article:tag" content="Three.js">
+<meta property="article:tag" content="WebGL">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://mobaigy.github.io/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/WebGestic-1.png">
 
 
-<link rel="canonical" href="https://mobaigy.github.io/">
+<link rel="canonical" href="https://mobaigy.github.io/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":true,"isPost":false,"lang":"zh-CN","comments":"","permalink":"","path":"index.html","title":""}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://mobaigy.github.io/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/","path":"2025/11/30/Gemini-3-pro-创建炫酷粒子交互系统/","title":"实测 Gemini 3 Pro：一行 Prompt 生成 WebGL + MediaPipe 手势交互粒子系统"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Mobai's blog</title>
+<title>实测 Gemini 3 Pro：一行 Prompt 生成 WebGL + MediaPipe 手势交互粒子系统 | Mobai's blog</title>
   
 
 
@@ -94,7 +103,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <h1 class="site-title">Mobai's blog</h1>
+      <p class="site-title">Mobai's blog</p>
       <i class="logo-line"></i>
     </a>
       <p class="site-subtitle" itemprop="description">Go & C++ & Python</p>
@@ -148,7 +157,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -161,6 +170,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%8E%A8-%E6%95%88%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="nav-number">2.</span> <span class="nav-text">🎨 效果展示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%9B%A0%EF%B8%8F-%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81%E6%8B%86%E8%A7%A3"><span class="nav-number">3.</span> <span class="nav-text">🛠️ 核心代码拆解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%89%A9%E7%90%86%E6%A8%A1%E6%8B%9F%E4%B8%8E-Lerp-%E6%8F%92%E5%80%BC"><span class="nav-number">3.1.</span> <span class="nav-text">1. 物理模拟与 Lerp 插值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BA%8C%E7%BB%B4%E6%89%8B%E7%BB%98%E6%98%A0%E5%B0%84%E5%88%B0%E4%B8%89%E7%BB%B4%E7%A9%BA%E9%97%B4"><span class="nav-number">3.2.</span> <span class="nav-text">2. 二维手绘映射到三维空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-MediaPipe-%E6%89%8B%E5%8A%BF%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">3.3.</span> <span class="nav-text">3. MediaPipe 手势归一化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%92%BB-%E6%BA%90%E7%A0%81%E5%88%86%E4%BA%AB"><span class="nav-number">4.</span> <span class="nav-text">💻 源码分享</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%F0%9F%A7%90-%E6%80%BB%E7%BB%93%E4%B8%8E%E5%B1%95%E6%9C%9B"><span class="nav-number">5.</span> <span class="nav-text">🧐 总结与展望</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -210,16 +220,17 @@
 
     </div>
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
 
-    
+
+  
 
 
 <div class="post-block">
   
   
 
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://mobaigy.github.io/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -233,13 +244,13 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | Mobai's blog">
+      <meta itemprop="name" content="实测 Gemini 3 Pro：一行 Prompt 生成 WebGL + MediaPipe 手势交互粒子系统 | Mobai's blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/" class="post-title-link" itemprop="url">实测 Gemini 3 Pro：一行 Prompt 生成 WebGL + MediaPipe 手势交互粒子系统</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          实测 Gemini 3 Pro：一行 Prompt 生成 WebGL + MediaPipe 手势交互粒子系统
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -263,6 +274,13 @@
     </span>
 
   
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
     <span class="post-meta-break"></span>
     <span class="post-meta-item" title="本文字数">
       <span class="post-meta-item-icon">
@@ -286,8 +304,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近 Gemini 3 Pro 发布，听说在多模态理解和代码生成上有了质的飞跃。作为一个热衷于 AI Coding 的开发者，我一直想做一个基于手势控制的 3D 粒子系统，但以往光是配置环境、调试 MediaPipe 和 Three.js 的坐标对齐就要花上半天。</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近 Gemini 3 Pro 发布，听说在多模态理解和代码生成上有了质的飞跃。作为一个热衷于 AI Coding 的开发者，我一直想做一个基于手势控制的 3D 粒子系统，但以往光是配置环境、调试 MediaPipe 和 Three.js 的坐标对齐就要花上半天。</p>
 <p>今天使用Gemini 3做一个测试：<strong>不写一行代码，只给 Prompt，看 Gemini 3 Pro 能否生成一个单文件、无依赖（CDN引入）、逻辑闭环的 WebGL 交互应用。</strong></p>
 <p>结果不仅跑通了，效果还出乎意料的完整。</p>
 <h2 id="🎨-效果展示"><a href="#🎨-效果展示" class="headerlink" title="🎨 效果展示"></a>🎨 效果展示</h2><p>这个单文件 HTML 包含了一套完整的交互系统：</p>
@@ -383,7 +400,6 @@
 }
 </style>
 
-      
     </div>
 
     
@@ -391,11 +407,37 @@
     
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>mobai
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://mobaigy.github.io/2025/11/30/Gemini-3-pro-%E5%88%9B%E5%BB%BA%E7%82%AB%E9%85%B7%E7%B2%92%E5%AD%90%E4%BA%A4%E4%BA%92%E7%B3%BB%E7%BB%9F/" title="实测 Gemini 3 Pro：一行 Prompt 生成 WebGL + MediaPipe 手势交互粒子系统">https://mobaigy.github.io/2025/11/30/Gemini-3-pro-创建炫酷粒子交互系统/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/zh-CN" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Three-js/" rel="tag"># Three.js</a>
+              <a href="/tags/WebGL/" rel="tag"># WebGL</a>
+              <a href="/tags/MediaPipe/" rel="tag"># MediaPipe</a>
+              <a href="/tags/AIGC/" rel="tag"># AIGC</a>
+              <a href="/tags/Gemini/" rel="tag"># Gemini</a>
+          </div>
+
+        
+
     </footer>
   </article>
 </div>
+
 
 
 
